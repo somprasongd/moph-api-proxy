@@ -1,16 +1,16 @@
-FROM node:18.18-alpine
-LABEL maintainer="somprasong.damyos@gmail.com"
-ENV NODE_ENV=production
-# Expose ports (for orchestrators and dynamic reverse proxies)
-EXPOSE 3000
-# Define working directory and copy source
+# syntax=docker/dockerfile:1
+FROM golang:1.24-alpine AS builder
 WORKDIR /app
-RUN mkdir .authorized_key && \
-    apk add --no-cache tzdata
-VOLUME /app/.authorized_key
-COPY ./package* ./
-RUN npm ci && \
-    npm cache clean --force
-COPY ./src ./src
-# Start the app
-CMD ["node", "src/index.js"]
+COPY go.mod ./
+RUN go mod download
+COPY . .
+RUN CGO_ENABLED=0 go build -o moph-api-proxy ./cmd/server
+
+FROM alpine:3.19
+WORKDIR /srv/app
+RUN adduser -D proxy
+COPY --from=builder /app/moph-api-proxy ./moph-api-proxy
+COPY moph-api-proxy.env.example ./moph-api-proxy.env.example
+USER proxy
+EXPOSE 3000
+ENTRYPOINT ["./moph-api-proxy"]

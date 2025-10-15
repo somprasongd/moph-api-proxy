@@ -1,9 +1,0 @@
-@HOST=http://localhost:3000
-@ENDPONT=phr
-@API-KEY=
-@CID=
-
-### RequestTokenv1
-POST {{HOST}}/api/RequestTokenv1?endpoint={{ENDPONT}}
-x-api-key: {{API-KEY}}
-

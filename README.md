@@ -1,145 +1,54 @@
-# MOPH Proxy API
+# MOPH IC Proxy (Go)
 
-## MOPH IC API Document
+This service provides an HTTP gateway to MOPH IC, FDH, and related APIs. It replaces the original Node.js implementation with a Go application focused on detailed operational logging and resilient token handling.
 
-<https://docs.google.com/document/d/1Inyhfrte0pECsD8YoForTL2W8B2hOxezf0GpTGEjJr8/edit>
+## Features
 
-## Development
+- Automatic token acquisition and refresh for MOPH IC and FDH services with Redis-backed caching
+- Reverse proxy capable of forwarding GET, POST, PUT, PATCH, and DELETE requests to configured upstreams
+- Optional API key enforcement using a generated secret stored on disk
+- HTML interface for status, API key display, and credential rotation workflows
+- Extensive logging that captures request lifecycle and error details
 
-- Set env rename `nodemon.example.json` to `nodemon.json` and config with your data
+## Requirements
 
-```json
-{
-  "env": {
-    "MOPH_HCODE": "your-hcode",
-    "USE_API_KEY": "true_or_false_default_is_true"
-  }
-}
-```
+- Go 1.24 or newer (the code is forward compatible with Go 1.25)
+- Redis 5 or newer
+- Access credentials for the upstream MOPH services
 
-To edit the secret key for hash password, add env like this:
+## Configuration
 
-```diff
-{
-  "env": {
-    "MOPH_HCODE": "your-hcode",
-    "USE_API_KEY": "true_or_false_default_is_true"
-+    "MOPH_IC_AUTH_SECRET": "new_ecret_key",
-+    "FDH_AUTH_SECRET": "new_ecret_key",
-  }
-}
-```
+Configuration is sourced from environment variables. The defaults mirror the previous Node.js project and are documented in `moph-api-proxy.env.example`.
 
-To edit the API destination URL, add env like this:
+| Variable | Description |
+| --- | --- |
+| `APP_PORT` | Port for the HTTP server (default `3000`) |
+| `REDIS_HOST` / `REDIS_PORT` / `REDIS_PASSWORD` | Redis connection details |
+| `MOPH_*`, `FDH_*`, `EPIDEM_API` | Upstream endpoints and secrets |
+| `MOPH_HCODE` | Hospital code (required) |
+| `USE_API_KEY` | Enables API key validation (default `true`) |
 
-```diff
-{
-  "env": {
-    "MOPH_HCODE": "your-hcode",
-    "USE_API_KEY": "true_or_false_default_is_true"
-+    "MOPH_CLAIM_API": "https://claim-nhso.moph.go.th", // UAT: "https://uat-moph-nhso.inet.co.th",
-+    "MOPH_PHR_API": "https://phr1.moph.go.th",
-+    "EPIDEM_API": "https://epidemcenter.moph.go.th/epidem",
-+    "FDH_API": "https://fdh.moph.go.th", // UAT: https://uat-fdh.inet.co.th
-+    "FDH_AUTH": "https://fdh.moph.go.th",
-+    "MOPH_IC_API": "https://cvp1.moph.go.th",
-+    "MOPH_IC_AUTH": "https://cvp1.moph.go.th",
-  }
-}
-```
-
-- Start redis server you can run
+## Running Locally
 
 ```bash
-docker-compose up -d
+# Install dependencies (none outside of the Go standard library)
+go build ./cmd/server
+./cmd/server
 ```
 
-- Install dependencies
+Ensure a Redis instance is running and accessible based on your environment variables before starting the proxy.
+
+## Docker
+
+A multi-stage Dockerfile is provided:
 
 ```bash
-npm install
+docker build -t moph-api-proxy .
+docker run --env-file moph-api-proxy.env.example -p 3000:3000 moph-api-proxy
 ```
 
-- Run dev server
+For development with Redis you can use the included `docker-compose.yml`.
 
-```bash
-npm run dev
-```
+## Logging
 
-## Production
-
-- Create `moph-ic-proxy.env` file
-
-```env
-MOPH_HCODE=your-hcode
-USE_API_KEY=true_or_false_default_is_true
-```
-
-To edit the secret key for hash password, add env like this:
-
-```diff
-{
-  "env": {
-    "MOPH_HCODE": "your-hcode",
-    "USE_API_KEY": "true_or_false_default_is_true"
-+    "MOPH_IC_AUTH_SECRET": "new_ecret_key",
-+    "FDH_AUTH_SECRET": "new_ecret_key",
-  }
-}
-```
-
-To edit the API destination URL, add env like this:
-
-```diff
-{
-  "env": {
-    "MOPH_HCODE": "your-hcode",
-    "USE_API_KEY": "true_or_false_default_is_true"
-+    "MOPH_CLAIM_API": "https://claim-nhso.moph.go.th", // UAT: "https://uat-moph-nhso.inet.co.th",
-+    "MOPH_PHR_API": "https://phr1.moph.go.th",
-+    "EPIDEM_API": "https://epidemcenter.moph.go.th/epidem",
-+    "FDH_API": "https://fdh.moph.go.th", // UAT: https://uat-fdh.inet.co.th
-+    "FDH_AUTH": "https://fdh.moph.go.th",
-+    "MOPH_IC_API": "https://cvp1.moph.go.th",
-+    "MOPH_IC_AUTH": "https://cvp1.moph.go.th",
-  }
-}
-```
-
-- To deploy with this production Compose file you can run
-
-```bash
-# create docker network
-docker network create webproxy
-
-# deploy
-docker-compose -f docker-compose.yml -f docker-compose.prod.yml up -d
-```
-
-- Add Username and Password
-
-Go to `http://your-server-ip:port/change-password`
-
-- Get API Key
-
-Go to `http://your-server-ip:port/api-key` and login with MOPH IC username and password.
-
-## How to use
-
-Call api from `http://your-server-ip:port/api/XXX?x-api-key=moph-ic-proxy-api-key&AAA=yyyy&BBB=zzzz`
-
-If set `USE_API_KEY=false` call `http://your-server-ip:port/api/XXX?AAA=yyyy&BBB=zzzz`
-
-```text
-http://localhost:9090/api/ImmunizationTarget?x-api-key=ETB4VPB-HJ4MEFA-MJ356Q5-HC3B87B&cid=1659900783037
-
-# OR
-
-http://localhost:9090/api/ImmunizationTarget?cid=1659900783037
-```
-
-> XXX is MOPH IC api endpoint
-
-> AAA, BBB is MOPH IC api query parameters
-
-> moph-ic-proxy-api get from log when start server
+The server emits detailed logs for all requests. Error logs include contextual data to aid troubleshooting, especially around upstream request failures and token refresh events.

@@ -1,10 +1,16 @@
-node_modules/
+# Build artifacts
+moph-api-proxy
+/server
+bin/
+*.exe
+*.out
+*.test
 
-# env
-nodemon.json
+# Environment files
 *.env
 
-# api key
-.access.key
+# Cached API key secret
+.authorized_key/
 
+# Legacy files
 cid.txt

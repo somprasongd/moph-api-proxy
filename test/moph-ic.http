@@ -1,8 +1,0 @@
-@HOST=http://localhost:3000
-@ENDPONT=mophic
-@API-KEY=
-@CID=
-
-### ImmunizationTarget
-GET {{HOST}}/api/ImmunizationTarget?cid={{CID}}
-x-api-key: {{API-KEY}}
