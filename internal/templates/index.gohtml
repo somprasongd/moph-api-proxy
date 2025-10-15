@@ -1,0 +1,89 @@
+{{define "index"}}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{{.Title}}</title>
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.7/dist/tailwind.min.css"
+    />
+    <style>
+      .card {
+        position: relative;
+        height: 100%;
+      }
+
+      .tag {
+        position: absolute;
+        top: 0;
+        right: 0;
+        background-color: rgba(0, 0, 0, 0.5);
+        color: white;
+        padding: 4px 8px;
+        border-radius: 4px;
+        font-size: 14px;
+      }
+    </style>
+  </head>
+  <body class="bg-gray-100">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <h1 class="text-3xl font-bold text-gray-900 mb-4">{{.Title}}</h1>
+      <p class="text-gray-700 mb-4">This is a MOPH API Proxy</p>
+      <button
+        class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mb-4"
+        onclick="window.location.href='/change-password?app=mophic'"
+      >
+        MOPH IC: Login/Change Password
+      </button>
+      <button
+        class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mb-4"
+        onclick="window.location.href='/change-password?app=fdh'"
+      >
+        FDH: Login/Change Password
+      </button>
+      {{if .UseAPIKey}}
+      <button
+        class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mb-4"
+        onclick="window.location.href='/api-key'"
+      >
+        Show API Key
+      </button>
+      {{end}}
+      <div class="flex flex-wrap justify-center">
+        {{range .APIs}}
+        <div class="w-full lg:w-1/2 p-2">
+          <div class="bg-white rounded-lg shadow-md p-8 h-full card">
+            <span class="tag text-xs uppercase bg-blue-500 py-1 px-2 rounded">
+              {{.Tag}}
+            </span>
+            <h2 class="text-xl font-bold text-gray-900 mb-4">
+              {{.Name}}
+            </h2>
+            <p class="text-gray-700 mb-4">{{.Description}}</p>
+            <p class="text-gray-700 mb-4">
+              <b>Target Host: </b><br />
+              <code class="break-words">{{.ProxyHost}}</code>
+            </p>
+            <p class="text-gray-700 mb-4">
+              <b>Example: </b><br />
+              <code class="break-words">{{$.Host}}/{{.URL}}</code>
+              {{if $.UseAPIKey}}
+              <br /><b>Header:</b><br />
+              X-API-KEY: your-api-key
+              {{end}}
+            </p>
+            <a
+              href="{{.Doc}}"
+              class="text-blue-600 hover:text-blue-800"
+              >API Doc</a
+            >
+          </div>
+        </div>
+        {{end}}
+      </div>
+    </div>
+  </body>
+</html>
+{{end}}

@@ -1,0 +1,84 @@
+{{define "api-key"}}
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>API Key</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.16/dist/tailwind.min.css"
+      rel="stylesheet"
+    />
+  </head>
+  <body class="bg-gray-200">
+    <div class="min-h-screen flex items-center justify-center">
+      <div class="max-w-md w-full mx-auto">
+        {{if eq .Status "error"}}
+        <div role="alert" class="mb-8">
+          <div class="bg-red-500 text-white font-bold rounded-t px-4 py-2">
+            Error
+          </div>
+          <div
+            class="border border-t-0 border-red-400 rounded-b bg-red-100 px-4 py-3 text-red-700"
+          >
+            <p>{{.Message}}</p>
+          </div>
+        </div>
+        {{end}}
+        {{if eq .Status "success"}}
+        <div role="alert" class="mb-8">
+          <div class="bg-blue-500 text-white font-bold rounded-t px-4 py-2">
+            Your API Key
+          </div>
+          <div
+            class="border border-t-0 border-blue-400 rounded-b bg-blue-100 px-4 py-3 text-blue-700"
+          >
+            <p>{{.Message}}</p>
+          </div>
+        </div>
+        {{end}}
+
+        <div class="bg-white shadow p-8 rounded-lg">
+          <h1 class="text-2xl font-bold mb-6">Login with MOPH IC/FDH</h1>
+          <form action="/api-key" method="POST">
+            <div class="mb-4">
+              <label for="username" class="block text-gray-700 font-bold mb-2"
+                >Current Username:</label
+              >
+              <input
+                type="text"
+                id="username"
+                name="username"
+                class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                required
+              />
+            </div>
+            <div class="mb-4">
+              <label for="password" class="block text-gray-700 font-bold mb-2"
+                >Current Password:</label
+              >
+              <input
+                type="password"
+                id="password"
+                name="password"
+                class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                required
+              />
+            </div>
+            <button
+              type="submit"
+              class="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+            >
+              Login
+            </button>
+            <a
+              href="/"
+              class="mt-3 block text-center text-sm font-medium text-blue-600 hover:text-blue-500"
+            >
+              Cancel
+            </a>
+          </form>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>
+{{end}}

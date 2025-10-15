@@ -1,9 +1,0 @@
-@HOST=http://localhost:3000
-@ENDPONT=claim
-@API-KEY=
-@CID=
-
-### API ส่งข้อมูลการใช้บริการ DMHT ในการเคลม OPD
-POST {{HOST}}/api/v1/opd/service-admissions/dmht?endpoint={{ENDPONT}}
-x-api-key: {{API-KEY}}
-

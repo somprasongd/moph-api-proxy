@@ -1,7 +1,0 @@
-{
-  "env": {
-    "MOPH_HCODE": "your-hcode",
-    "USE_API_KEY": "true_or_false_default_is_true",
-    "REDIS_PASSWORD": "require_if_use_password"
-  }
-}
