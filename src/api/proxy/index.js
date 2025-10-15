@@ -1,3 +1,4 @@
+const axios = require('axios');
 const express = require('express');
 const formidable = require('formidable');
 const FormData = require('form-data');
@@ -99,6 +100,20 @@ router.all('*', async (req, res, next) => {
 
     return res.send(respone.data);
   } catch (error) {
+    if (axios.isAxiosError(error)) {
+      console.error('axios error.message:', error.message);
+      console.error('axios error.code:', error.code);
+      console.error('axios error.syscall:', error.syscall);
+      console.error('axios error.errno:', error.errno);
+      console.error('axios error.response?.status:', error.response?.status);
+      console.error('axios error.response?.data:', error.response?.data);
+      console.error('axios error.cause:', error.cause);
+      if (typeof error.toJSON === 'function') {
+        console.error('axios error.toJSON():', error.toJSON());
+      }
+    } else {
+      console.error('non-axios error:', error);
+    }
     next(error);
   }
 });

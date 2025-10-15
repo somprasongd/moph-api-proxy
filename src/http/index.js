@@ -21,26 +21,45 @@ const {
 } = require('../config');
 
 const httpsAgent = new https.Agent({
-  rejectUnauthorized: false,
+  keepAlive: true,
 });
+
+const NETWORK_ERROR_CODES = new Set(['ECONNRESET', 'ETIMEDOUT', 'EAI_AGAIN']);
+
+function applyNetworkRetry(client) {
+  axiosRetry(client, {
+    retries: 3,
+    retryDelay: (count) => Math.min(1000 * 2 ** (count - 1), 8000),
+    retryCondition: (error) =>
+      axiosRetry.isNetworkOrIdempotentRequestError(error) ||
+      (error.code && NETWORK_ERROR_CODES.has(error.code)),
+  });
+}
+
+const commonHeaders = {
+  'Content-Type': 'application/json',
+  Accept: 'application/json',
+  'Accept-Encoding': 'gzip, deflate',
+};
+
+const defaultClientOptions = {
+  headers: commonHeaders,
+  timeout: 15000,
+  httpsAgent,
+  maxRedirects: 0,
+};
 
 const getTokenClient = axios.create({
   baseURL: MOPH_IC_AUTH,
-  httpsAgent,
+  ...defaultClientOptions,
 });
-axiosRetry(getTokenClient, {
-  retries: 3,
-  retryDelay: axiosRetry.exponentialDelay,
-});
+applyNetworkRetry(getTokenClient);
 
 const getTokenClientFDH = axios.create({
   baseURL: FDH_AUTH,
-  httpsAgent,
+  ...defaultClientOptions,
 });
-axiosRetry(getTokenClientFDH, {
-  retries: 3,
-  retryDelay: axiosRetry.exponentialDelay,
-});
+applyNetworkRetry(getTokenClientFDH);
 
 async function getToken(
   options = { force: false, username: '', password: '', app: 'mophic' }
@@ -95,13 +114,11 @@ async function getToken(
 
 const defaultOptions = {
   baseURL: MOPH_IC_API,
-  headers: {
-    'Content-Type': 'application/json',
-  },
-  httpsAgent,
+  ...defaultClientOptions,
 };
 
 const instance = axios.create(defaultOptions);
+applyNetworkRetry(instance);
 
 // const controller = new AbortController();
 
@@ -138,13 +155,11 @@ instance.interceptors.response.use(null, async (error) => {
 
 const epidemOptions = {
   baseURL: EPIDEM_API,
-  headers: {
-    'Content-Type': 'application/json',
-  },
-  httpsAgent,
+  ...defaultClientOptions,
 };
 
 const instanceEpidem = axios.create(epidemOptions);
+applyNetworkRetry(instanceEpidem);
 
 instanceEpidem.interceptors.request.use(async (config) => {
   const token = await getToken({ app: 'mophic' });
@@ -178,13 +193,11 @@ instanceEpidem.interceptors.response.use(null, async (error) => {
 
 const phrOptions = {
   baseURL: MOPH_PHR_API,
-  headers: {
-    'Content-Type': 'application/json',
-  },
-  httpsAgent,
+  ...defaultClientOptions,
 };
 
 const instancePhr = axios.create(phrOptions);
+applyNetworkRetry(instancePhr);
 
 instancePhr.interceptors.request.use(async (config) => {
   const token = await getToken({ app: 'mophic' });
@@ -218,13 +231,11 @@ instancePhr.interceptors.response.use(null, async (error) => {
 
 const claimOptions = {
   baseURL: MOPH_CLAIM_API,
-  headers: {
-    'Content-Type': 'application/json',
-  },
-  httpsAgent,
+  ...defaultClientOptions,
 };
 
 const instanceClaim = axios.create(claimOptions);
+applyNetworkRetry(instanceClaim);
 
 instanceClaim.interceptors.request.use(async (config) => {
   const token = await getToken({ app: 'mophic' });
@@ -254,13 +265,11 @@ instanceClaim.interceptors.response.use(null, async (error) => {
 
 const fdhOptions = {
   baseURL: FDH_API,
-  headers: {
-    'Content-Type': 'application/json',
-  },
-  httpsAgent,
+  ...defaultClientOptions,
 };
 
 const instanceFDH = axios.create(fdhOptions);
+applyNetworkRetry(instanceFDH);
 
 instanceFDH.interceptors.request.use(async (config) => {
   const token = await getToken({ app: 'fdh' });
