@@ -5,8 +5,8 @@ import (
 	"net/http"
 	"net/url"
 
-	"moph-ic-proxy/internal/config"
-	"moph-ic-proxy/internal/keygen"
+	"moph-api-proxy/internal/config"
+	"moph-api-proxy/internal/keygen"
 )
 
 // APIKeyVerifier ensures that incoming requests present a valid API key when enabled.

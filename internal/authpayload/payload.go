@@ -7,8 +7,8 @@ import (
 	"encoding/hex"
 	"encoding/json"
 
-	"moph-ic-proxy/internal/cache"
-	"moph-ic-proxy/internal/config"
+	"moph-api-proxy/internal/cache"
+	"moph-api-proxy/internal/config"
 )
 
 // Payload represents the authentication payload sent to the upstream service.

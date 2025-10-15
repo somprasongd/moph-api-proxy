@@ -18,7 +18,7 @@ This service provides an HTTP gateway to MOPH IC, FDH, and related APIs. It repl
 
 ## Configuration
 
-Configuration is sourced from environment variables. The defaults mirror the previous Node.js project and are documented in `moph-ic-proxy.env.example`.
+Configuration is sourced from environment variables. The defaults mirror the previous Node.js project and are documented in `moph-api-proxy.env.example`.
 
 | Variable | Description |
 | --- | --- |
@@ -43,8 +43,8 @@ Ensure a Redis instance is running and accessible based on your environment vari
 A multi-stage Dockerfile is provided:
 
 ```bash
-docker build -t moph-ic-proxy .
-docker run --env-file moph-ic-proxy.env.example -p 3000:3000 moph-ic-proxy
+docker build -t moph-api-proxy .
+docker run --env-file moph-api-proxy.env.example -p 3000:3000 moph-api-proxy
 ```
 
 For development with Redis you can use the included `docker-compose.yml`.

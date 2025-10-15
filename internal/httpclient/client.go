@@ -10,7 +10,7 @@ import (
 	"strings"
 	"time"
 
-	"moph-ic-proxy/internal/config"
+	"moph-api-proxy/internal/config"
 )
 
 // APIClient wraps outbound HTTP calls with automatic token injection and retry.

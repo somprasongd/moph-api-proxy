@@ -5,7 +5,7 @@ services:
     ports:
       - "3000:3000"
     env_file:
-      - moph-ic-proxy.env.example
+      - moph-api-proxy.env.example
     depends_on:
       - redis
   redis:

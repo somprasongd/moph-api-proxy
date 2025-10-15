@@ -1,5 +1,5 @@
 # Build artifacts
-moph-ic-proxy
+moph-api-proxy
 /server
 bin/
 *.exe

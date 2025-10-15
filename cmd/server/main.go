@@ -7,14 +7,14 @@ import (
 	"os"
 	"time"
 
-	"moph-ic-proxy/internal/cache"
-	"moph-ic-proxy/internal/config"
-	"moph-ic-proxy/internal/httpclient"
-	"moph-ic-proxy/internal/keygen"
-	"moph-ic-proxy/internal/middleware"
-	"moph-ic-proxy/internal/server"
-	"moph-ic-proxy/internal/templates"
-	"moph-ic-proxy/internal/web"
+	"moph-api-proxy/internal/cache"
+	"moph-api-proxy/internal/config"
+	"moph-api-proxy/internal/httpclient"
+	"moph-api-proxy/internal/keygen"
+	"moph-api-proxy/internal/middleware"
+	"moph-api-proxy/internal/server"
+	"moph-api-proxy/internal/templates"
+	"moph-api-proxy/internal/web"
 )
 
 func main() {

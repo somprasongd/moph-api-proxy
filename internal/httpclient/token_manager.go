@@ -13,9 +13,9 @@ import (
 	"strings"
 	"time"
 
-	"moph-ic-proxy/internal/authpayload"
-	"moph-ic-proxy/internal/cache"
-	"moph-ic-proxy/internal/config"
+	"moph-api-proxy/internal/authpayload"
+	"moph-api-proxy/internal/cache"
+	"moph-api-proxy/internal/config"
 )
 
 // TokenManager provides caching and refresh logic for application tokens.

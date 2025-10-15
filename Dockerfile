@@ -4,13 +4,13 @@ WORKDIR /app
 COPY go.mod ./
 RUN go mod download
 COPY . .
-RUN CGO_ENABLED=0 go build -o moph-ic-proxy ./cmd/server
+RUN CGO_ENABLED=0 go build -o moph-api-proxy ./cmd/server
 
 FROM alpine:3.19
 WORKDIR /srv/app
 RUN adduser -D proxy
-COPY --from=builder /app/moph-ic-proxy ./moph-ic-proxy
-COPY moph-ic-proxy.env.example ./moph-ic-proxy.env.example
+COPY --from=builder /app/moph-api-proxy ./moph-api-proxy
+COPY moph-api-proxy.env.example ./moph-api-proxy.env.example
 USER proxy
 EXPOSE 3000
-ENTRYPOINT ["./moph-ic-proxy"]
+ENTRYPOINT ["./moph-api-proxy"]

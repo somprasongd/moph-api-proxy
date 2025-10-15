@@ -10,7 +10,7 @@ import (
 	"strings"
 	"time"
 
-	"moph-ic-proxy/internal/httpclient"
+	"moph-api-proxy/internal/httpclient"
 )
 
 // ProxyHandler forwards API requests to configured upstream endpoints.

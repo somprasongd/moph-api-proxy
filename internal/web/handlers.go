@@ -8,11 +8,11 @@ import (
 	"strings"
 	"time"
 
-	"moph-ic-proxy/internal/authpayload"
-	"moph-ic-proxy/internal/cache"
-	"moph-ic-proxy/internal/config"
-	"moph-ic-proxy/internal/httpclient"
-	"moph-ic-proxy/internal/keygen"
+	"moph-api-proxy/internal/authpayload"
+	"moph-api-proxy/internal/cache"
+	"moph-api-proxy/internal/config"
+	"moph-api-proxy/internal/httpclient"
+	"moph-api-proxy/internal/keygen"
 )
 
 // Server bundles dependencies for the HTML endpoints.

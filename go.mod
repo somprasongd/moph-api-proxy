@@ -1,3 +1,3 @@
-module moph-ic-proxy
+module moph-api-proxy
 
 go 1.24
