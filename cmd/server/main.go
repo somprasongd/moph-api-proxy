@@ -63,8 +63,13 @@ func main() {
 	})
 	webServer.Register(mux)
 
+	apiKeyMiddleware := middleware.APIKeyVerifier(cfg, keyManager, logger)
+
+	changePasswordHandler := apiKeyMiddleware(server.NewChangePasswordHandler(tokenManager, logger))
+	mux.Handle("/api/auth/change-password", changePasswordHandler)
+
 	proxy := server.NewProxyHandler(clientManager, logger)
-	apiHandler := middleware.APIKeyVerifier(cfg, keyManager, logger)(http.StripPrefix("/api", proxy))
+	apiHandler := apiKeyMiddleware(http.StripPrefix("/api", proxy))
 	mux.Handle("/api/", apiHandler)
 	mux.Handle("/api", apiHandler)
 
