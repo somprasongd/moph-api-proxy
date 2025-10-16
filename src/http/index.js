@@ -25,6 +25,86 @@ const httpsAgent = new https.Agent({
 });
 
 const NETWORK_ERROR_CODES = new Set(['ECONNRESET', 'ETIMEDOUT', 'EAI_AGAIN']);
+const REDIRECT_STATUS_CODES = new Set([301, 302, 303, 307, 308]);
+const DEFAULT_MANUAL_REDIRECTS = 5;
+
+function toPlainHeaders(headers = {}) {
+  if (headers && typeof headers.toJSON === 'function') {
+    return headers.toJSON();
+  }
+  return { ...headers };
+}
+
+function isAbsoluteUrl(url = '') {
+  return /^https?:\/\//i.test(url);
+}
+
+function combineURLs(baseURL = '', relativeURL = '') {
+  const trimmedBase = baseURL.replace(/\/+$/, '');
+  if (!relativeURL) {
+    return trimmedBase;
+  }
+
+  if (relativeURL.startsWith('?') || relativeURL.startsWith('#')) {
+    return `${trimmedBase}${relativeURL}`;
+  }
+
+  const trimmedRelative = relativeURL.replace(/^\/+/, '');
+  if (!trimmedBase) {
+    return `/${trimmedRelative}`;
+  }
+  return `${trimmedBase}/${trimmedRelative}`;
+}
+
+function resolveRedirectUrl(config, location = '') {
+  if (isAbsoluteUrl(location)) {
+    return location;
+  }
+
+  if (config.baseURL && isAbsoluteUrl(config.baseURL)) {
+    return combineURLs(config.baseURL, location);
+  }
+
+  return location;
+}
+
+function tryHandleRedirect(error) {
+  const { response, config } = error || {};
+  if (!config || !response || !REDIRECT_STATUS_CODES.has(response.status)) {
+    return null;
+  }
+
+  const location = response.headers?.location;
+  if (!location) {
+    return Promise.reject(error);
+  }
+
+  const redirectCount = (config._redirectCount ?? 0) + 1;
+  const maxRedirects =
+    typeof config.manualMaxRedirects === 'number'
+      ? config.manualMaxRedirects
+      : DEFAULT_MANUAL_REDIRECTS;
+
+  if (redirectCount > maxRedirects) {
+    return Promise.reject(error);
+  }
+
+  const redirectUrl = resolveRedirectUrl(config, location);
+  const absoluteRedirect = isAbsoluteUrl(redirectUrl);
+  const headers = toPlainHeaders(config.headers);
+
+  const redirectConfig = {
+    ...config,
+    url: redirectUrl,
+    baseURL: absoluteRedirect ? undefined : config.baseURL,
+    headers,
+    _redirectCount: redirectCount,
+    manualMaxRedirects: maxRedirects,
+    maxRedirects: 0,
+  };
+
+  return axios.request(redirectConfig);
+}
 
 function applyNetworkRetry(client) {
   axiosRetry(client, {
@@ -47,6 +127,7 @@ const defaultClientOptions = {
   timeout: 15000,
   httpsAgent,
   maxRedirects: 0,
+  manualMaxRedirects: DEFAULT_MANUAL_REDIRECTS,
 };
 
 const getTokenClient = axios.create({
@@ -137,6 +218,11 @@ instance.interceptors.request.use(async (config) => {
 });
 
 instance.interceptors.response.use(null, async (error) => {
+  const redirectAttempt = tryHandleRedirect(error);
+  if (redirectAttempt) {
+    return redirectAttempt;
+  }
+
   if (error.config && error.response && error.response.status === 401) {
     const token = await getToken({ force: true, app: 'mophic' });
     if (!token) {
@@ -146,6 +232,7 @@ instance.interceptors.response.use(null, async (error) => {
 
     // console.log('interceptors.response', `Bearer ${token}`);
     error.config.headers.Authorization = `Bearer ${token}`;
+    delete error.config._redirectCount;
     console.log('Retry from interceptors.response');
     return axios.request(error.config);
   }
@@ -175,6 +262,11 @@ instanceEpidem.interceptors.request.use(async (config) => {
 });
 
 instanceEpidem.interceptors.response.use(null, async (error) => {
+  const redirectAttempt = tryHandleRedirect(error);
+  if (redirectAttempt) {
+    return redirectAttempt;
+  }
+
   if (error.config && error.response && error.response.status === 401) {
     const token = await getToken({ force: true, app: 'mophic' });
     if (!token) {
@@ -185,6 +277,7 @@ instanceEpidem.interceptors.response.use(null, async (error) => {
     // console.log('interceptors.response', `Bearer ${token}`);
     error.config.headers.Authorization = `Bearer ${token}`;
     // console.log('Retry from interceptors.response');
+    delete error.config._redirectCount;
     return axios.request(error.config);
   }
 
@@ -212,6 +305,11 @@ instancePhr.interceptors.request.use(async (config) => {
 });
 
 instancePhr.interceptors.response.use(null, async (error) => {
+  const redirectAttempt = tryHandleRedirect(error);
+  if (redirectAttempt) {
+    return redirectAttempt;
+  }
+
   if (
     error.config &&
     error.response &&
@@ -223,6 +321,7 @@ instancePhr.interceptors.response.use(null, async (error) => {
       return Promise.reject(error);
     }
     error.config.headers.Authorization = `Bearer ${token}`;
+    delete error.config._redirectCount;
     return axios.request(error.config);
   }
 
@@ -250,6 +349,11 @@ instanceClaim.interceptors.request.use(async (config) => {
 });
 
 instanceClaim.interceptors.response.use(null, async (error) => {
+  const redirectAttempt = tryHandleRedirect(error);
+  if (redirectAttempt) {
+    return redirectAttempt;
+  }
+
   if (error.config && error.response && error.response.status === 401) {
     const token = await getToken({ force: true, app: 'mophic' });
     if (!token) {
@@ -257,6 +361,7 @@ instanceClaim.interceptors.response.use(null, async (error) => {
       return Promise.reject(error);
     }
     error.config.headers.Authorization = `Bearer ${token}`;
+    delete error.config._redirectCount;
     return axios.request(error.config);
   }
 
@@ -285,6 +390,11 @@ instanceFDH.interceptors.request.use(async (config) => {
 });
 
 instanceFDH.interceptors.response.use(null, async (error) => {
+  const redirectAttempt = tryHandleRedirect(error);
+  if (redirectAttempt) {
+    return redirectAttempt;
+  }
+
   if (error.config && error.response && error.response.status === 401) {
     const token = await getToken({ force: true, app: 'fdh' });
     if (!token) {
@@ -295,6 +405,7 @@ instanceFDH.interceptors.response.use(null, async (error) => {
     // console.log('interceptors.response', `Bearer ${token}`);
     error.config.headers.Authorization = `Bearer ${token}`;
     // console.log('Retry from interceptors.response');
+    delete error.config._redirectCount;
     return axios.request(error.config);
   }
 
