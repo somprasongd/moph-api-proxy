@@ -3,8 +3,8 @@
 
 const env = {
   APP_PORT: process.env.APP_PORT || 3000,
-  REDIS_HOST: process.env.REDIS_HOST || 'localhost',
-  REDIS_PORT: process.env.REDIS_PORT || 6379,
+  REDIS_HOST: process.env.REDIS_HOST,
+  REDIS_PORT: process.env.REDIS_PORT,
   REDIS_PASSWORD: process.env.REDIS_PASSWORD || '',
   MOPH_CLAIM_API: process.env.MOPH_CLAIM_API || 'https://claim-nhso.moph.go.th',
   MOPH_PHR_API: process.env.MOPH_PHR_API || 'https://phr1.moph.go.th',
