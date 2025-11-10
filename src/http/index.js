@@ -251,7 +251,7 @@ instanceClaim.interceptors.request.use(async (config) => {
 
 instanceClaim.interceptors.response.use(null, async (error) => {
   if (error.config && error.response && error.response.status === 401) {
-    const token = await getToken({ force: true, app: 'mophic' });
+    const token = await getToken({ force: true, app: 'fdh' });
     if (!token) {
       console.log('Cancal Retry from interceptors.response', error);
       return Promise.reject(error);
