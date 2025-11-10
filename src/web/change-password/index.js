@@ -1,3 +1,4 @@
+// ให้ผู้ดูแลเปลี่ยนรหัสผ่าน/โทเคนผ่านหน้าเว็บได้สะดวก
 const express = require('express');
 
 const router = express.Router();
@@ -14,6 +15,7 @@ router.all('/change-password', async (req, res) => {
   if (req.method === 'POST') {
     const { username, password } = req.body;
 
+    // เรียก getToken แบบ force เพื่อสร้างโทเคนใหม่ให้บัญชีที่ระบุ
     const token = await http.getToken({ force: true, username, password, app });
     if (!token) {
       payload.status = 'error';

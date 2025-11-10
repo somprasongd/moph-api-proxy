@@ -1,8 +1,10 @@
+// ฟังก์ชันสร้าง payload สำหรับขอรับโทเคนและตรวจสอบข้อมูลใน cache
 const config = require('../config');
 const cache = require('../cache');
 const { hashPassword } = require('./password');
 
 function createAuthPayload(username, password, secretKey) {
+  // แปลงข้อมูลผู้ใช้ให้กลายเป็น payload ที่ API ภายนอกต้องการ
   return {
     user: username,
     password_hash: hashPassword(password, secretKey),
@@ -10,6 +12,7 @@ function createAuthPayload(username, password, secretKey) {
   };
 }
 async function isCurrentAuthPayload(app = 'mophic', username, password) {
+  // ตรวจสอบว่าข้อมูล username/password ที่กรอกตรงกับ payload ล่าสุดหรือไม่
   const strPayload = await cache.get(`${app}${config.AUTH_PAYLOAD_KEY}`);
   // console.log('strPayload', strPayload);
   if (!strPayload) {

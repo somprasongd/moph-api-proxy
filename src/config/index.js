@@ -1,3 +1,4 @@
+// กำหนดค่า environment และตรวจสอบตัวแปรสำคัญก่อนเริ่มระบบ
 // const { createHmac } = require('crypto');
 
 const env = {

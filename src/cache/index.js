@@ -1,3 +1,4 @@
+// ส่วนติดต่อ Redis สำหรับจัดการ cache โทเคนและข้อมูลอื่น ๆ
 const redis = require('redis');
 
 const { REDIS_HOST, REDIS_PORT, REDIS_PASSWORD } = require('../config');
@@ -12,6 +13,7 @@ const createClient = () =>
     };
 
     if (REDIS_PASSWORD) {
+      // หากมีการตั้งรหัสผ่าน Redis ให้แนบไปด้วย
       option.password = REDIS_PASSWORD;
     }
 
@@ -19,6 +21,7 @@ const createClient = () =>
 
     redisClient.on('connect', function () {
       console.log('Redis: connected.');
+      // ล้างคีย์ token เดิมเพื่อกันข้อมูลค้างจากรอบก่อน
       redisClient.del('token');
       return resolve();
     });

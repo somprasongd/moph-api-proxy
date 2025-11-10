@@ -1,3 +1,4 @@
+// ไฟล์หลักสำหรับเริ่มต้นเซิร์ฟเวอร์ Express และตั้งค่า middleware ทั้งหมด
 const express = require('express');
 const morgan = require('morgan');
 const config = require('./config');
@@ -14,18 +15,20 @@ async function main() {
   console.log(appName);
 
   try {
+    // สร้างการเชื่อมต่อ Redis เพื่อใช้ cache โทเคนก่อนเริ่มระบบ
     await redisClient.createClient();
   } catch (error) {
     throw new Error(`Fatal error: ${error.message}`);
   }
 
-  // create all tokens from saved username and password
+  // ขอ refresh โทเคนล่วงหน้าไว้ใน cache เพื่อให้ proxy เริ่มทำงานได้ทันที
   http.getToken({ force: true, app: 'mophic' });
   http.getToken({ force: true, app: 'fdh' });
 
   // generate api key
   if (config.USE_API_KEY) {
     try {
+      // ถ้าเปิดใช้ API Key ให้ตรวจสอบ/สร้างไฟล์เก็บ key ก่อน
       await keygen.init();
     } catch (error) {
       throw new Error(`Fatal error: ${error.message}`);
@@ -57,6 +60,7 @@ async function main() {
 
   // handle 404
   app.use((req, res, next) => {
+    // ทุกเส้นทางที่ไม่ตรงจะสร้าง error 404 ส่งต่อให้ middleware ถัดไป
     const error = new Error(
       `Invalid route: Can not find ${req.originalUrl} on this server!`
     );
@@ -66,6 +70,7 @@ async function main() {
 
   // handle error
   app.use((error, req, res, next) => {
+    // เตรียมโครงสร้างตอบกลับเมื่อเกิด error ภายใน proxy
     const json = {
       error: {
         statusCode: 500,

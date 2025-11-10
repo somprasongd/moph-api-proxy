@@ -1,3 +1,4 @@
+// หน้าโฮมเพจแสดงรายการ API และรายละเอียดปลายทางแต่ละระบบ
 const express = require('express');
 const config = require('../../config');
 
@@ -6,6 +7,7 @@ function init(appName) {
 
   router.get('/', (req, res) => {
     const apis = [];
+    // ดึงรายการ API ที่เปิดใช้งานตาม config เพื่อแสดงบนหน้าแรก
     if (config.MOPH_IC_API) {
       apis.push({
         tag: 'MOPH IC',
