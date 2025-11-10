@@ -24,12 +24,17 @@ jobs:
     steps:
       - name: executing remote ssh commands
         uses: appleboy/ssh-action@master
+        env:
+          CR_USERNAME: ${{ secrets.CR_USERNAME }}
+          CR_PAT: ${{ secrets.CR_PAT }}
         with:
           host: ${{ secrets.DEV_SERVER_HOST }}
           username: ${{ secrets.DEV_SERVER_USERNAME }}
           key: ${{ secrets.DEV_SERVER_KEY }}
           port: ${{ secrets.DEV_SERVER_PORT }}
+          envs: CR_USERNAME,CR_PAT
           script: |
-            cd docker/moph-api-proxy
-            docker compose pull
-            docker compose up -d moph-api-proxy
+            echo "$CR_PAT" | docker login ghcr.io -u "$CR_USERNAME" --password-stdin
+            cd docker-apps/moph-api-proxy
+            docker compose -f docker-compose.yml -f docker-compose.prod.yml pull
+            docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d moph-api-proxy
