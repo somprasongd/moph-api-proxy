@@ -14,9 +14,9 @@ jobs:
       - name: Login to GitHub Container Registry
         run: echo ${{ secrets.CR_PAT }} | docker login ghcr.io -u ${{ secrets.CR_USERNAME }} --password-stdin
       - name: Build
-        run: docker build -t ghcr.io/${{ secrets.CR_USERNAME }}/moph-ic-proxy:latest .
+        run: docker build -t ghcr.io/${{ secrets.CR_USERNAME }}/moph-api-proxy:latest .
       - name: Push
-        run: docker image push ghcr.io/${{ secrets.CR_USERNAME }}/moph-ic-proxy:latest
+        run: docker image push ghcr.io/${{ secrets.CR_USERNAME }}/moph-api-proxy:latest
 
   cd:
     runs-on: ubuntu-latest
@@ -30,6 +30,6 @@ jobs:
           key: ${{ secrets.DEV_SERVER_KEY }}
           port: ${{ secrets.DEV_SERVER_PORT }}
           script: |
-            cd docker/moph-ic-proxy
-            docker-compose pull
-            docker-compose up -d moph-ic-proxy
+            cd docker/moph-api-proxy
+            docker compose pull
+            docker compose up -d moph-api-proxy

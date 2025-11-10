@@ -1,16 +1,16 @@
-version: '2.4'
+version: "2.4"
 
 services:
-  moph-ic-proxy:
-    container_name: moph-ic-proxy
+  moph-api-proxy:
+    container_name: moph-api-proxy
     build:
       context: .
       dockerfile: ./Dockerfile
-    image: ghcr.io/somprasongd/moph-ic-proxy:${IMAGE_TAG:-latest}
+    image: ghcr.io/somprasongd/moph-api-proxy:${IMAGE_TAG:-latest}
     ports:
-      - '${MOPHPROXY_PORT:-9090}:3000'
+      - "${MOPHPROXY_PORT:-9090}:3000"
     env_file:
-      - moph-ic-proxy.env
+      - moph-api-proxy.env
     environment:
       - TZ=Asia/Bangkok
       - REDIS_HOST=redis
@@ -21,7 +21,7 @@ services:
       - redis
     networks:
       - webproxy
-      - moph-proxy-backend
+      - moph-api-proxy-backend
 
 volumes:
   authorized_key:

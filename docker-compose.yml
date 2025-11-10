@@ -1,19 +1,19 @@
-version: '2.4'
+version: "2.4"
 
 services:
   redis:
-    container_name: moph-proxy-redis
-    image: 'redis:alpine'
+    container_name: moph-api-proxy-redis
+    image: "redis:alpine"
     ports:
-      - '${MOPHPROXY_REDIS_PORT:-6379}:6379'
+      - "${MOPHPROXY_REDIS_PORT:-6379}:6379"
     # command: redis-server --requirepass sOmE_sEcUrE_pAsS
     healthcheck:
-      test: ['CMD', 'redis-cli', 'ping']
+      test: ["CMD", "redis-cli", "ping"]
       interval: 15s
       timeout: 10s
       retries: 3
     networks:
-      - moph-proxy-backend
+      - moph-api-proxy-backend
 
   # moph-c19-proxy:
   #   container_name: moph-c19-proxy
@@ -22,4 +22,4 @@ services:
   #     dockerfile: ./Dockerfile
 
 networks:
-  moph-proxy-backend:
+  moph-api-proxy-backend:

@@ -68,7 +68,7 @@ npm run dev
 
 ## Production
 
-- Create `moph-ic-proxy.env` file
+- Create `moph-api-proxy.env` file
 
 ```env
 MOPH_HCODE=your-hcode
@@ -126,7 +126,7 @@ Go to `http://your-server-ip:port/api-key` and login with MOPH IC username and p
 
 ## How to use
 
-Call api from `http://your-server-ip:port/api/XXX?x-api-key=moph-ic-proxy-api-key&AAA=yyyy&BBB=zzzz`
+Call api from `http://your-server-ip:port/api/XXX?x-api-key=moph-api-proxy-api-key&AAA=yyyy&BBB=zzzz`
 
 If set `USE_API_KEY=false` call `http://your-server-ip:port/api/XXX?AAA=yyyy&BBB=zzzz`
 
@@ -142,4 +142,4 @@ http://localhost:9090/api/ImmunizationTarget?cid=1659900783037
 
 > AAA, BBB is MOPH IC api query parameters
 
-> moph-ic-proxy-api get from log when start server
+> moph-api-proxy get from log when start server
