@@ -40,7 +40,7 @@ function init(appName) {
     }
     if (config.MOPH_CLAIM_API) {
       apis.push({
-        tag: 'MOPH IC',
+        tag: 'FDH',
         name: 'MOPH Claim-NHSO',
         description: '(DMHT/EPI/dT Services)',
         proxy_host: config.MOPH_CLAIM_API,
