@@ -117,6 +117,18 @@ router.all('*', async (req, res, next) => {
     return res.send(response.data);
   } catch (error) {
     if (axios.isAxiosError(error)) {
+      if (error.code === 'ECONNABORTED') {
+        // แยกกรณี timeout ให้ตอบ 504 ชัดเจน
+        console.error('axios timeout:', error.message);
+        return res.status(504).json({
+          message: 'upstream request timeout',
+          detail: error.message,
+          endpoint,
+          url,
+          timeoutMs: error.config?.timeout,
+        });
+      }
+
       // log รายละเอียด axios error ให้ตรวจสอบ trace ได้ง่าย
       console.error('axios error.message:', error.message);
       console.error('axios error.code:', error.code);

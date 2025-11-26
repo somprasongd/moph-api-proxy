@@ -19,6 +19,7 @@ Set these variables through `nodemon.json`, shell exports, or the `moph-api-prox
 | --- | --- | --- | --- |
 | `MOPH_HCODE` | ✅ | – | Hospital code used in every request payload. The service refuses to start when missing. |
 | `USE_API_KEY` | ❌ | `true` | Toggle API key validation middleware. Set to `false` only when another perimeter control exists. |
+| `HTTP_TIMEOUT_MS` | ❌ | `30000` | Axios request timeout for upstream calls. Increase if PHR/IC endpoints routinely take longer than 15s. |
 | `APP_PORT` | ❌ | `3000` | Port used by the Express server. |
 | `REDIS_HOST` | ❌ | `localhost` | Hostname of the Redis instance for caching tokens/payloads. Leave empty to force the in-memory cache (tokens reset on restart). Use Redis for production or any multi-instance deployment so tokens are shared. |
 | `REDIS_PORT` | ❌ | `6379` | Redis TCP port. |

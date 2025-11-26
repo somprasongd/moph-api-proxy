@@ -20,6 +20,7 @@ const env = {
   USE_API_KEY: process.env.USE_API_KEY
     ? process.env.USE_API_KEY === 'true'
     : true,
+  HTTP_TIMEOUT_MS: process.env.HTTP_TIMEOUT_MS || 30000,
   TOKEN_KEY: '-auth-token',
   AUTH_PAYLOAD_KEY: '-auth-payload',
 };

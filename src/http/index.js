@@ -17,6 +17,7 @@ const {
   MOPH_IC_API,
   MOPH_IC_AUTH,
   MOPH_IC_AUTH_SECRET,
+  HTTP_TIMEOUT_MS,
   TOKEN_KEY,
   AUTH_PAYLOAD_KEY,
 } = require('../config');
@@ -31,10 +32,17 @@ const NETWORK_ERROR_CODES = new Set(['ECONNRESET', 'ETIMEDOUT', 'EAI_AGAIN']);
 function applyNetworkRetry(client) {
   axiosRetry(client, {
     retries: 3,
-    retryDelay: (count) => Math.min(1000 * 2 ** (count - 1), 8000),
-    retryCondition: (error) =>
-      axiosRetry.isNetworkOrIdempotentRequestError(error) ||
-      (error.code && NETWORK_ERROR_CODES.has(error.code)),
+    retryDelay: axiosRetry.exponentialDelay,
+    shouldResetTimeout: true,
+    retryCondition: (error) => {
+      const isTimeout = error.code === 'ECONNABORTED';
+
+      return (
+        axiosRetry.isNetworkOrIdempotentRequestError(error) ||
+        (error.code && NETWORK_ERROR_CODES.has(error.code)) ||
+        isTimeout
+      );
+    },
   });
 }
 
@@ -46,7 +54,7 @@ const commonHeaders = {
 
 const defaultClientOptions = {
   headers: commonHeaders,
-  timeout: 15000,
+  timeout: Number(HTTP_TIMEOUT_MS) || 15000,
   httpsAgent,
   maxRedirects: 0,
 };
